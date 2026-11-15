@@ -22,6 +22,9 @@ export function Header() {
           <NavLink to="/products" className={({ isActive }) => navLinkClass(isActive)}>
             전체 상품
           </NavLink>
+          <NavLink to="/faq" className={({ isActive }) => navLinkClass(isActive)}>
+            FAQ
+          </NavLink>
           <NavLink to="/wishlist" className={({ isActive }) => navLinkClass(isActive)}>
             위시리스트
             {wishlistIds.length > 0 && (

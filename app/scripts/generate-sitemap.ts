@@ -8,6 +8,7 @@ const staticRoutes = [
   { path: "/", priority: "1.0", changefreq: "daily" },
   { path: "/products", priority: "0.9", changefreq: "daily" },
   { path: "/wishlist", priority: "0.1", changefreq: "monthly" },
+  { path: "/faq", priority: "0.3", changefreq: "monthly" },
 ];
 
 const productRoutes = PRODUCTS.map((product) => ({

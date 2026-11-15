@@ -8,6 +8,7 @@ import { CartPage } from "./pages/CartPage";
 import { WishlistPage } from "./pages/WishlistPage";
 import { CheckoutPage } from "./pages/CheckoutPage";
 import { OrderCompletePage } from "./pages/OrderCompletePage";
+import { FaqPage } from "./pages/FaqPage";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
               <Route path="/wishlist" element={<WishlistPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/order-complete" element={<OrderCompletePage />} />
+              <Route path="/faq" element={<FaqPage />} />
             </Routes>
           </main>
         </div>
