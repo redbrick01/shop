@@ -1,9 +1,16 @@
 import { Link } from "react-router-dom";
 import { PRODUCTS, averageRating } from "../data/products";
 import { ProductCard } from "../components/ProductCard";
+import { useSeo } from "../hooks/useSeo";
 
 export function HomePage() {
   const featured = [...PRODUCTS].sort((a, b) => averageRating(b) - averageRating(a)).slice(0, 3);
+
+  useSeo({
+    title: "홈",
+    description: "NVIDIA·AMD 그래픽카드를 스펙과 가격으로 한눈에 비교하고 구매할 수 있는 GPU 전문 쇼핑몰. 검색, 필터, 장바구니, 위시리스트까지 한 번에.",
+    path: "/",
+  });
 
   return (
     <div>

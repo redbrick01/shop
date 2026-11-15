@@ -3,10 +3,18 @@ import { getProductById } from "../data/products";
 import { formatPrice } from "../utils/format";
 import { ProductImagePlaceholder } from "../components/ProductImagePlaceholder";
 import { useShop } from "../context/ShopContext";
+import { useSeo } from "../hooks/useSeo";
 
 export function CartPage() {
   const { cartItems, updateCartQuantity, removeFromCart, cartTotal } = useShop();
   const navigate = useNavigate();
+
+  useSeo({
+    title: "장바구니",
+    description: "장바구니에 담긴 그래픽카드를 확인하고 수량을 조절한 뒤 주문할 수 있습니다.",
+    path: "/cart",
+    noindex: true,
+  });
 
   if (cartItems.length === 0) {
     return (

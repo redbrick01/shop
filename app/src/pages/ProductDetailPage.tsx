@@ -5,6 +5,7 @@ import { formatPrice } from "../utils/format";
 import { StarRating } from "../components/StarRating";
 import { ProductImagePlaceholder } from "../components/ProductImagePlaceholder";
 import { useShop } from "../context/ShopContext";
+import { useSeo } from "../hooks/useSeo";
 
 export function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -12,6 +13,58 @@ export function ProductDetailPage() {
   const { addToCart, toggleWishlist, isWishlisted } = useShop();
   const [quantity, setQuantity] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
+
+  const rating = product ? averageRating(product) : 0;
+
+  useSeo({
+    title: product ? product.name : "상품을 찾을 수 없습니다",
+    description: product
+      ? `${product.name} - ${product.brand} ${product.series}, VRAM ${product.vramGb}GB, TDP ${product.tdpWatts}W. 가격 ${formatPrice(product.price)}. 리뷰 ${product.reviews.length}개, 평균 평점 ${rating.toFixed(1)}점.`
+      : "요청하신 상품을 찾을 수 없습니다.",
+    path: product ? `/products/${product.id}` : "/products",
+    noindex: !product,
+    jsonLd: product
+      ? {
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: product.name,
+          brand: { "@type": "Brand", name: product.brand },
+          sku: product.id,
+          description: `${product.series} · VRAM ${product.vramGb}GB · ${product.cudaOrStreamCores.toLocaleString("ko-KR")} 코어 · 부스트 클럭 ${product.boostClockMhz}MHz · TDP ${product.tdpWatts}W`,
+          image: `https://shop-tau-murex.vercel.app/og-image.png`,
+          offers: {
+            "@type": "Offer",
+            url: `https://shop-tau-murex.vercel.app/products/${product.id}`,
+            priceCurrency: "KRW",
+            price: product.price,
+            availability:
+              product.stock > 0
+                ? "https://schema.org/InStock"
+                : "https://schema.org/OutOfStock",
+          },
+          ...(product.reviews.length > 0
+            ? {
+                aggregateRating: {
+                  "@type": "AggregateRating",
+                  ratingValue: rating.toFixed(1),
+                  reviewCount: product.reviews.length,
+                },
+                review: product.reviews.map((review) => ({
+                  "@type": "Review",
+                  author: { "@type": "Person", name: review.author },
+                  datePublished: review.date,
+                  reviewRating: {
+                    "@type": "Rating",
+                    ratingValue: review.rating,
+                    bestRating: 5,
+                  },
+                  reviewBody: review.comment,
+                })),
+              }
+            : {}),
+        }
+      : undefined,
+  });
 
   if (!product) {
     return (
@@ -26,7 +79,6 @@ export function ProductDetailPage() {
 
   const outOfStock = product.stock === 0;
   const wishlisted = isWishlisted(product.id);
-  const rating = averageRating(product);
 
   function handleAddToCart() {
     addToCart(product!.id, quantity);

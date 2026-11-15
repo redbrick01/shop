@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { PRODUCTS, averageRating } from "../data/products";
 import type { Brand } from "../types/product";
 import { ProductCard } from "../components/ProductCard";
+import { useSeo } from "../hooks/useSeo";
 
 type SortOption = "default" | "price-asc" | "price-desc" | "popular" | "newest";
 
@@ -11,13 +13,30 @@ const VRAM_OPTIONS = Array.from(new Set(PRODUCTS.map((p) => p.vramGb))).sort((a,
 const PRICE_MAX = Math.max(...PRODUCTS.map((p) => p.price));
 
 export function CatalogPage() {
-  const [search, setSearch] = useState("");
+  const [searchParams] = useSearchParams();
+  const [search, setSearch] = useState(searchParams.get("q") ?? "");
   const [brandFilter, setBrandFilter] = useState<Brand[]>([]);
   const [makerFilter, setMakerFilter] = useState<string[]>([]);
   const [vramFilter, setVramFilter] = useState<number[]>([]);
   const [maxPrice, setMaxPrice] = useState(PRICE_MAX);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sort, setSort] = useState<SortOption>("default");
+
+  useSeo({
+    title: "전체 상품",
+    description: "NVIDIA·AMD 그래픽카드 전체 라인업을 브랜드, 제조사, 가격대, VRAM으로 필터링하고 가격·인기·신상품순으로 정렬해 비교할 수 있습니다.",
+    path: "/products",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      itemListElement: PRODUCTS.map((product, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `https://shop-tau-murex.vercel.app/products/${product.id}`,
+        name: product.name,
+      })),
+    },
+  });
 
   function toggle<T>(list: T[], value: T, setter: (v: T[]) => void) {
     setter(list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
